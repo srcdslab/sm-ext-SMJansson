@@ -889,6 +889,11 @@ stock Handle json_string_format_ex(int tmpBufferLength, const char[] sFormat, an
 stock bool json_array_get_bool(Handle hArray, int iIndex) {
 	Handle hElement = json_array_get(hArray, iIndex);
 
+	if (hElement == INVALID_HANDLE) {
+		delete hElement;
+		return false;
+	}
+
 	bool bResult = (json_is_true(hElement) ? true : false);
 
 	delete hElement;
@@ -907,6 +912,11 @@ stock bool json_array_get_bool(Handle hArray, int iIndex) {
 stock float json_array_get_float(Handle hArray, int iIndex) {
 	Handle hElement = json_array_get(hArray, iIndex);
 
+	if (hElement == INVALID_HANDLE) {
+		delete hElement;
+		return 0.0;
+	}
+
 	float fResult = (json_is_number(hElement) ? json_number_value(hElement) : 0.0);
 
 	delete hElement;
@@ -924,6 +934,11 @@ stock float json_array_get_float(Handle hArray, int iIndex) {
  */
 stock int json_array_get_int(Handle hArray, int iIndex) {
 	Handle hElement = json_array_get(hArray, iIndex);
+
+	if (hElement == INVALID_HANDLE) {
+		delete hElement;
+		return 0;
+	}
 
 	int iResult = (json_is_integer(hElement) ? json_integer_value(hElement) : 0);
 
@@ -947,6 +962,12 @@ stock int json_array_get_string(Handle hArray, int iIndex, char[] sBuffer, int m
 	Handle hElement = json_array_get(hArray, iIndex);
 
 	int iResult = -1;
+
+	if (hArray == INVALID_HANDLE) {
+		delete hElement;
+		return iResult;
+	}
+
 	if(json_is_string(hElement)) {
 		iResult = json_string_value(hElement, sBuffer, maxlength);
 	}
@@ -967,6 +988,11 @@ stock int json_array_get_string(Handle hArray, int iIndex, char[] sBuffer, int m
 stock bool json_object_get_bool(Handle hObj, const char[] sKey) {
 	Handle hElement = json_object_get(hObj, sKey);
 
+	if (hElement == INVALID_HANDLE) {
+		delete hElement;
+		return false;
+	}
+
 	bool bResult = json_is_true(hElement);
 
 	delete hElement;
@@ -985,6 +1011,11 @@ stock bool json_object_get_bool(Handle hObj, const char[] sKey) {
 stock float json_object_get_float(Handle hObj, const char[] sKey) {
 	Handle hElement = json_object_get(hObj, sKey);
 
+	if (hElement == INVALID_HANDLE) {
+		delete hElement;
+		return 0.0;
+	}
+
 	float fResult = (json_is_number(hElement) ? json_number_value(hElement) : 0.0);
 
 	delete hElement;
@@ -1002,6 +1033,11 @@ stock float json_object_get_float(Handle hObj, const char[] sKey) {
  */
 stock int json_object_get_int(Handle hObj, const char[] sKey) {
 	Handle hElement = json_object_get(hObj, sKey);
+
+	if (hElement == INVALID_HANDLE) {
+		delete hElement;
+		return 0;
+	}
 
 	int iResult = (json_is_integer(hElement) ? json_integer_value(hElement) : 0);
 
@@ -1025,6 +1061,12 @@ stock int json_object_get_string(Handle hObj, const char[] sKey, char[] sBuffer,
 	Handle hElement = json_object_get(hObj, sKey);
 
 	int iResult = -1;
+
+	if (hElement == INVALID_HANDLE) {
+		delete hElement;
+		return iResult;
+	}
+
 	if(json_is_string(hElement)) {
 		iResult = json_string_value(hElement, sBuffer, maxlength);
 	}

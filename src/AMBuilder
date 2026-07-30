@@ -46,7 +46,6 @@ for sdk_name in Extension.sdks:
             project, builder, cxx, projectName + '.ext', sdk
         )
 
-        # Include paths for both system and quote includes
         binary.compiler.includes += jansson_inc
         binary.compiler.cxxincludes += jansson_inc
 
@@ -67,13 +66,11 @@ for sdk_name in Extension.sdks:
             binary.compiler.cxxflags += ['-fno-rtti']
         elif cxx.family == 'msvc':
             binary.compiler.cxxflags += ['/GR-']
-            # Windows defines to ensure MSVC pulls in <windows.h> and intrin headers
             binary.compiler.defines += [
                 '_CRT_SECURE_NO_WARNINGS',
                 'WIN32',
                 '_WIN32',
                 'WIN32_LEAN_AND_MEAN',
             ]
-            binary.compiler.postlink += ['kernel32.lib', 'user32.lib']
 
 Extension.extensions += builder.Add(project)

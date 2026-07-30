@@ -5,11 +5,12 @@ projectName = 'smjansson'
 
 project = builder.LibraryProject(projectName)
 
-# Extension source files (adjust 'src/extension.cpp' if it lives at root)
+# Resolve extension source file
 ext_source = os.path.join(Extension.ext_root, 'src', 'extension.cpp')
 if not os.path.exists(ext_source):
     ext_source = os.path.join(Extension.ext_root, 'extension.cpp')
 
+# Extension source files, embedded Jansson source, and SourceMod base SDK source
 project.sources += [
     ext_source,
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'dump.c'),
@@ -24,16 +25,9 @@ project.sources += [
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'utf.c'),
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'value.c'),
     os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
-    os.path.join(Extension.sm_root, 'public', 'asm', 'asm.c'),
-    os.path.join(Extension.sm_root, 'public', 'libudis86', 'decode.c'),
-    os.path.join(Extension.sm_root, 'public', 'libudis86', 'itab.c'),
-    os.path.join(Extension.sm_root, 'public', 'libudis86', 'syn-att.c'),
-    os.path.join(Extension.sm_root, 'public', 'libudis86', 'syn-intel.c'),
-    os.path.join(Extension.sm_root, 'public', 'libudis86', 'syn.c'),
-    os.path.join(Extension.sm_root, 'public', 'libudis86', 'udis86.c'),
 ]
 
-# Include paths for Jansson headers and jansson_config.h
+# Include paths for Jansson headers
 jansson_inc = [
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src'),
     os.path.join(Extension.ext_root, 'src', 'jansson'),

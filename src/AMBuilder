@@ -10,6 +10,7 @@ ext_source = os.path.join(Extension.ext_root, 'src', 'extension.cpp')
 if not os.path.exists(ext_source):
     ext_source = os.path.join(Extension.ext_root, 'extension.cpp')
 
+# Source files to compile
 project.sources += [
     ext_source,
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'dump.c'),
@@ -26,7 +27,7 @@ project.sources += [
     os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
 ]
 
-# Include paths for Jansson
+# Include paths for Jansson headers
 jansson_inc = [
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src'),
     os.path.join(Extension.ext_root, 'src', 'jansson'),
@@ -45,10 +46,11 @@ for sdk_name in Extension.sdks:
             project, builder, cxx, projectName + '.ext', sdk
         )
 
+        # Include paths for both system and quote includes
         binary.compiler.includes += jansson_inc
         binary.compiler.cxxincludes += jansson_inc
 
-        # Mandatory Jansson & SM defines cross-platform
+        # Cross-platform mandatory defines
         binary.compiler.defines += [
             'HAVE_STDINT_H',
             'HAVE_STRING_H',
@@ -65,8 +67,13 @@ for sdk_name in Extension.sdks:
             binary.compiler.cxxflags += ['-fno-rtti']
         elif cxx.family == 'msvc':
             binary.compiler.cxxflags += ['/GR-']
-            binary.compiler.defines += ['_CRT_SECURE_NO_WARNINGS']
-            # Specify /DEFAULTLIB switches so MSVC passes them to link.exe properly
-            binary.compiler.postlink += ['/DEFAULTLIB:kernel32.lib', '/DEFAULTLIB:user32.lib']
+            # Windows defines to ensure MSVC pulls in <windows.h> and intrin headers
+            binary.compiler.defines += [
+                '_CRT_SECURE_NO_WARNINGS',
+                'WIN32',
+                '_WIN32',
+                'WIN32_LEAN_AND_MEAN',
+            ]
+            binary.compiler.postlink += ['kernel32.lib', 'user32.lib']
 
 Extension.extensions += builder.Add(project)

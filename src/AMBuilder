@@ -1,0 +1,69 @@
+# vim: set sts=2 ts=8 sw=2 tw=99 et ft=python:
+import os
+
+projectName = 'smjansson'
+
+project = builder.LibraryProject(projectName)
+
+# Extension source files, embedded Jansson source, and SourceMod SDK sources
+project.sources += [
+    os.path.join(Extension.ext_root, 'extension.cpp'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'dump.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'error.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'hashtable.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'hashtable_seed.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'load.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'memory.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'pack_unpack.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'strbuffer.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'strconv.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'utf.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'value.c'),
+    os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
+    os.path.join(Extension.sm_root, 'public', 'asm', 'asm.c'),
+    os.path.join(Extension.sm_root, 'public', 'libudis86', 'decode.c'),
+    os.path.join(Extension.sm_root, 'public', 'libudis86', 'itab.c'),
+    os.path.join(Extension.sm_root, 'public', 'libudis86', 'syn-att.c'),
+    os.path.join(Extension.sm_root, 'public', 'libudis86', 'syn-intel.c'),
+    os.path.join(Extension.sm_root, 'public', 'libudis86', 'syn.c'),
+    os.path.join(Extension.sm_root, 'public', 'libudis86', 'udis86.c'),
+]
+
+# Include header directories
+jansson_inc = os.path.join(Extension.ext_root, 'src', 'jansson', 'src')
+
+for sdk_name in Extension.sdks:
+    sdk = Extension.sdks[sdk_name]
+    if sdk['name'] in ['mock']:
+        continue
+
+    for cxx in builder.targets:
+        if not cxx.target.arch in sdk['platforms'][cxx.target.platform]:
+            continue
+
+        binary = Extension.HL2ExtConfig(
+            project, builder, cxx, projectName + '.ext', sdk
+        )
+
+        # Include Jansson headers
+        binary.compiler.cxxincludes += [jansson_inc]
+
+        # Defines required for Jansson and SourceMod SDK
+        binary.compiler.defines += [
+            'HAVE_STRING_H',
+            'SOURCEMOD_BUILD',
+        ]
+
+        # Platform-specific compiler/linker flags
+        if cxx.target.platform == 'linux':
+            binary.compiler.postlink += ['-lpthread', '-lrt']
+        elif cxx.target.platform == 'mac':
+            binary.compiler.cflags += ['-Wno-deprecated-declarations']
+            binary.compiler.postlink += ['-framework', 'CoreServices']
+
+        if cxx.family == 'gcc' or cxx.family == 'clang':
+            binary.compiler.cxxflags += ['-fno-rtti']
+        elif cxx.family == 'msvc':
+            binary.compiler.cxxflags += ['/GR-']
+
+Extension.extensions += builder.Add(project)

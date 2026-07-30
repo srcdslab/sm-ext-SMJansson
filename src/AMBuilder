@@ -66,7 +66,7 @@ for sdk_name in Extension.sdks:
         elif cxx.family == 'msvc':
             binary.compiler.cxxflags += ['/GR-']
             binary.compiler.defines += ['_CRT_SECURE_NO_WARNINGS']
-            # Feed Windows API import libraries to MSVC linker
-            binary.compiler.postlink += ['kernel32.lib', 'user32.lib']
+            # Specify /DEFAULTLIB switches so MSVC passes them to link.exe properly
+            binary.compiler.postlink += ['/DEFAULTLIB:kernel32.lib', '/DEFAULTLIB:user32.lib']
 
 Extension.extensions += builder.Add(project)

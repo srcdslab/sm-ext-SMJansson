@@ -10,7 +10,6 @@ ext_source = os.path.join(Extension.ext_root, 'src', 'extension.cpp')
 if not os.path.exists(ext_source):
     ext_source = os.path.join(Extension.ext_root, 'extension.cpp')
 
-# Extension source files, embedded Jansson source, and SourceMod base SDK source
 project.sources += [
     ext_source,
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'dump.c'),
@@ -27,7 +26,7 @@ project.sources += [
     os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
 ]
 
-# Include paths for Jansson headers
+# Include paths for Jansson
 jansson_inc = [
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src'),
     os.path.join(Extension.ext_root, 'src', 'jansson'),
@@ -46,7 +45,8 @@ for sdk_name in Extension.sdks:
             project, builder, cxx, projectName + '.ext', sdk
         )
 
-        # Include Jansson headers
+        # Use BOTH includes and cxxincludes so <header.h> and "header.h" work
+        binary.compiler.includes += jansson_inc
         binary.compiler.cxxincludes += jansson_inc
 
         # Defines required for Jansson and SourceMod SDK

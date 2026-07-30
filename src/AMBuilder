@@ -1,0 +1,76 @@
+# vim: set sts=2 ts=8 sw=2 tw=99 et ft=python:
+import os
+
+projectName = 'smjansson'
+
+project = builder.LibraryProject(projectName)
+
+# Resolve extension source file
+ext_source = os.path.join(Extension.ext_root, 'src', 'extension.cpp')
+if not os.path.exists(ext_source):
+    ext_source = os.path.join(Extension.ext_root, 'extension.cpp')
+
+# Source files to compile
+project.sources += [
+    ext_source,
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'dump.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'error.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'hashtable.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'hashtable_seed.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'load.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'memory.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'pack_unpack.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'strbuffer.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'strconv.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'utf.c'),
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'value.c'),
+    os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
+]
+
+# Include paths for Jansson headers
+jansson_inc = [
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src'),
+    os.path.join(Extension.ext_root, 'src', 'jansson'),
+]
+
+for sdk_name in Extension.sdks:
+    sdk = Extension.sdks[sdk_name]
+    if sdk['name'] in ['mock']:
+        continue
+
+    for cxx in builder.targets:
+        if not cxx.target.arch in sdk['platforms'][cxx.target.platform]:
+            continue
+
+        binary = Extension.HL2ExtConfig(
+            project, builder, cxx, projectName + '.ext', sdk
+        )
+
+        binary.compiler.includes += jansson_inc
+        binary.compiler.cxxincludes += jansson_inc
+
+        # Cross-platform mandatory defines
+        binary.compiler.defines += [
+            'HAVE_STDINT_H',
+            'HAVE_STRING_H',
+            'SOURCEMOD_BUILD',
+        ]
+
+        if cxx.target.platform == 'linux':
+            binary.compiler.postlink += ['-lpthread', '-lrt']
+        elif cxx.target.platform == 'mac':
+            binary.compiler.cflags += ['-Wno-deprecated-declarations']
+            binary.compiler.postlink += ['-framework', 'CoreServices']
+
+        if cxx.family == 'gcc' or cxx.family == 'clang':
+            binary.compiler.cxxflags += ['-fno-rtti']
+        elif cxx.family == 'msvc':
+            binary.compiler.cxxflags += ['/GR-']
+            binary.compiler.defines += [
+                '_CRT_SECURE_NO_WARNINGS',
+                'WIN32',
+                '_WIN32',
+                'WIN32_LEAN_AND_MEAN',
+            ]
+
+Extension.extensions += builder.Add(project)

@@ -45,17 +45,16 @@ for sdk_name in Extension.sdks:
             project, builder, cxx, projectName + '.ext', sdk
         )
 
-        # Use BOTH includes and cxxincludes so <header.h> and "header.h" work
         binary.compiler.includes += jansson_inc
         binary.compiler.cxxincludes += jansson_inc
 
-        # Defines required for Jansson and SourceMod SDK
+        # Mandatory Jansson & SM defines cross-platform
         binary.compiler.defines += [
+            'HAVE_STDINT_H',
             'HAVE_STRING_H',
             'SOURCEMOD_BUILD',
         ]
 
-        # Platform-specific compiler/linker flags
         if cxx.target.platform == 'linux':
             binary.compiler.postlink += ['-lpthread', '-lrt']
         elif cxx.target.platform == 'mac':
@@ -66,5 +65,7 @@ for sdk_name in Extension.sdks:
             binary.compiler.cxxflags += ['-fno-rtti']
         elif cxx.family == 'msvc':
             binary.compiler.cxxflags += ['/GR-']
+            # Suppress common MSVC C runtime warnings if needed
+            binary.compiler.defines += ['_CRT_SECURE_NO_WARNINGS']
 
 Extension.extensions += builder.Add(project)

@@ -29,6 +29,19 @@
  * Version: $Id$
  */
 
+// To make this compile on windows with the github's CI
+#if defined(_MSC_VER) || defined(_WIN32)
+  #ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
+  #endif
+  #include <windows.h>
+  #include <intrin.h>
+
+  #pragma intrinsic(_InterlockedIncrement)
+  #pragma comment(lib, "kernel32.lib")
+  #pragma comment(lib, "user32.lib")
+#endif
+
 #ifndef _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_
 #define _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_
 

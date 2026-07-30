@@ -5,9 +5,13 @@ projectName = 'smjansson'
 
 project = builder.LibraryProject(projectName)
 
-# Extension source files, embedded Jansson source, and SourceMod SDK sources
+# Extension source files (adjust 'src/extension.cpp' if it lives at root)
+ext_source = os.path.join(Extension.ext_root, 'src', 'extension.cpp')
+if not os.path.exists(ext_source):
+    ext_source = os.path.join(Extension.ext_root, 'extension.cpp')
+
 project.sources += [
-    os.path.join(Extension.ext_root, 'extension.cpp'),
+    ext_source,
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'dump.c'),
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'error.c'),
     os.path.join(Extension.ext_root, 'src', 'jansson', 'src', 'hashtable.c'),
@@ -29,8 +33,11 @@ project.sources += [
     os.path.join(Extension.sm_root, 'public', 'libudis86', 'udis86.c'),
 ]
 
-# Include header directories
-jansson_inc = os.path.join(Extension.ext_root, 'src', 'jansson', 'src')
+# Include paths for Jansson headers and jansson_config.h
+jansson_inc = [
+    os.path.join(Extension.ext_root, 'src', 'jansson', 'src'),
+    os.path.join(Extension.ext_root, 'src', 'jansson'),
+]
 
 for sdk_name in Extension.sdks:
     sdk = Extension.sdks[sdk_name]
@@ -46,7 +53,7 @@ for sdk_name in Extension.sdks:
         )
 
         # Include Jansson headers
-        binary.compiler.cxxincludes += [jansson_inc]
+        binary.compiler.cxxincludes += jansson_inc
 
         # Defines required for Jansson and SourceMod SDK
         binary.compiler.defines += [

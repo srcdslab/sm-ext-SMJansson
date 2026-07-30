@@ -16,7 +16,6 @@ on:
 jobs:
   build-release-extension:
     uses: srcdslab/ci-workflows/.github/workflows/shared_build_release_am_extension.yml@v1
-    needs: [build-libuv-linux, build-libuv-windows]
     with:
       sdks: "sdk2013"
       artifact-path: "libuv/dist"

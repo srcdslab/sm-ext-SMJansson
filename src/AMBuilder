@@ -71,6 +71,8 @@ for sdk_name in Extension.sdks:
                 'WIN32',
                 '_WIN32',
                 'WIN32_LEAN_AND_MEAN',
+                'HAVE_WIN32_THREADS',
             ]
+            binary.compiler.cflags += ['/FIwindows.h']
 
 Extension.extensions += builder.Add(project)

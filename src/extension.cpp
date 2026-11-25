@@ -351,6 +351,12 @@ static cell_t Native_json_object_iter(IPluginContext *pContext, const cell_t *pa
     }
 
     void *iter = json_object_iter(object);
+	// No key (empty object, missing key, not an object): end of iteration, as
+	// json_object_iter_next already returns, instead of a handle around NULL.
+	if(iter == NULL) {
+		return BAD_HANDLE;
+	}
+
 	Handle_t hndlResult = g_pHandleSys->CreateHandle(htJanssonIterator, iter, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if(hndlResult == BAD_HANDLE) {
 		pContext->ThrowNativeError("Could not create handle for JSON Iterator.");
@@ -380,6 +386,12 @@ static cell_t Native_json_object_iter_at(IPluginContext *pContext, const cell_t 
 	pContext->LocalToString(params[2], &key);
 
     void *iter = json_object_iter_at(object, key);
+	// No key (empty object, missing key, not an object): end of iteration, as
+	// json_object_iter_next already returns, instead of a handle around NULL.
+	if(iter == NULL) {
+		return BAD_HANDLE;
+	}
+
 	Handle_t hndlResult = g_pHandleSys->CreateHandle(htJanssonIterator, iter, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if(hndlResult == BAD_HANDLE) {
 		pContext->ThrowNativeError("Could not create handle for JSON Iterator.");

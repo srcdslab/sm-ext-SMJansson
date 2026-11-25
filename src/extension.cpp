@@ -197,11 +197,11 @@ static cell_t Native_json_object_set_new(IPluginContext *pContext, const cell_t 
     }
 
 	bool bSuccess = (json_object_set(object, key, value) == 0);
-	if(bSuccess) {
-		if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
-		{
-			return pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
-		}
+	// The include documents that the value handle is always closed, as jansson's
+	// *_new functions steal the reference: on failure too, or it leaks.
+	if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
 	}
 
 	return bSuccess;
@@ -564,12 +564,12 @@ static cell_t Native_json_object_iter_set_new(IPluginContext *pContext, const ce
     }
 
 	bool bSuccess = (json_object_iter_set(object, iter, value) == 0);
-	if(bSuccess) {
-		if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
-		{
-			pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
-			return false;
-		}
+	// The include documents that the value handle is always closed, as jansson's
+	// *_new functions steal the reference: on failure too, or it leaks.
+	if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
+	{
+		pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
+		return false;
 	}
 
     return bSuccess;
@@ -699,12 +699,12 @@ static cell_t Native_json_array_set_new(IPluginContext *pContext, const cell_t *
     }
 
 	bool bSuccess = (json_array_set(object, iIndex, value) == 0);
-	if(bSuccess) {
-		if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
-		{
-			pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
-			return false;
-		}
+	// The include documents that the value handle is always closed, as jansson's
+	// *_new functions steal the reference: on failure too, or it leaks.
+	if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
+	{
+		pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
+		return false;
 	}
 
 	return bSuccess;
@@ -760,12 +760,12 @@ static cell_t Native_json_array_append_new(IPluginContext *pContext, const cell_
     }
 
 	bool bSuccess = (json_array_append(object, value) == 0);
-	if(bSuccess) {
-		if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
-		{
-			pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
-			return false;
-		}
+	// The include documents that the value handle is always closed, as jansson's
+	// *_new functions steal the reference: on failure too, or it leaks.
+	if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
+	{
+		pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
+		return false;
 	}
 
 	return bSuccess;
@@ -827,12 +827,12 @@ static cell_t Native_json_array_insert_new(IPluginContext *pContext, const cell_
     }
 
 	bool bSuccess = (json_array_insert(object, iIndex, value) == 0);
-	if(bSuccess) {
-		if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
-		{
-			pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
-			return false;
-		}
+	// The include documents that the value handle is always closed, as jansson's
+	// *_new functions steal the reference: on failure too, or it leaks.
+	if ((err=g_pHandleSys->FreeHandle(hndlValue, NULL)) != HandleError_None)
+	{
+		pContext->ThrowNativeError("Could not free <Object> handle %x (error %d)", hndlValue, err);
+		return false;
 	}
 
 	return bSuccess;
